@@ -32,6 +32,7 @@
        01 w PIC X(3) VALUE "YES".
        01 CalculateQualityPts PIC 99V99.
        01 CalculateTotalCredit PIC 99V99.
+       01 CounterVar PIC 9.
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
        OPEN OUTPUT myOutFile.
@@ -50,7 +51,9 @@
        READ myInFile
        AT END MOVE "NO" TO w       
        NOT AT END   
-       IF Grade = "A"
+       EVALUATE CounterVar
+           WHEN 0 THRU 3
+              IF Grade = "A"
           MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts 
           end-multiply 
        ELSE
@@ -64,8 +67,12 @@
            MULTIPLY 3.00 BY CreditHr GIVING CalculateQualityPts 
           end-multiply
        END-IF
-       *>MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts end-multiply
-       COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr       
-       *>COMPUTE CalculateQualityPts = ( CreditHr)
-       DISPLAY CalculateQualityPts
+       COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr 
+       COMPUTE CounterVar = CounterVar + 1   
+           WHEN 4
+              Compute CalculateQualityPts = 0
+              COMPUTE CounterVar = 0
+              COMPUTE CalculateTotalCredit = 0
+       END-EVALUATE       
+       DISPLAY inRecord
        END-READ.

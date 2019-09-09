@@ -31,6 +31,7 @@
        01 QualityPtsTitle  PIC X(4) VALUE "QPTS".
        01 w PIC X(3) VALUE "YES".
        01 CalculateQualityPts PIC 99V99.
+       01 CalculateTotalCredit PIC 99V99.
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
        OPEN OUTPUT myOutFile.
@@ -49,7 +50,8 @@
        READ myInFile
        AT END MOVE "NO" TO w       
        NOT AT END   
-       MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts end-multiply       
+       MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts end-multiply
+       COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr       
        *>COMPUTE CalculateQualityPts = ( CreditHr)
-       DISPLAY CalculateQualityPts
+       DISPLAY inRecord
        END-READ.

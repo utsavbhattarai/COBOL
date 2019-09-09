@@ -50,8 +50,22 @@
        READ myInFile
        AT END MOVE "NO" TO w       
        NOT AT END   
-       MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts end-multiply
+       IF Grade = "A"
+          MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts 
+          end-multiply 
+       ELSE
+           COMPUTE CalculateQualityPts = 0
+       END-IF
+       IF Grade = "B"
+           MULTIPLY 3.00 BY CreditHr GIVING CalculateQualityPts 
+          end-multiply
+       END-IF
+       IF Grade = "C"
+           MULTIPLY 3.00 BY CreditHr GIVING CalculateQualityPts 
+          end-multiply
+       END-IF
+       *>MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts end-multiply
        COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr       
        *>COMPUTE CalculateQualityPts = ( CreditHr)
-       DISPLAY inRecord
+       DISPLAY CalculateQualityPts
        END-READ.

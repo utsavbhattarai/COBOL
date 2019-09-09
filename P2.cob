@@ -33,11 +33,17 @@
        01 CalculateQualityPts PIC 99V99.
        01 CalculateTotalCredit PIC 99V99.
        01 CounterVar PIC 9.
+       01 GradeSpace PIC X(10).
+       01 EarnedSpace PIC X(3).
+       01 QualityPtsSpace PIC X(8).
+       01 SemesterSpace PIC X(40).
+       01 SemCalSpace PIC x(3).
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
        OPEN OUTPUT myOutFile.
        *>DISPLAY "SOUTHEASTERN LOUISIANA UNIVERSITY"
-       *>DISPLAY CourseVar, CourseTitle, GradeTitle, CreditHrTitle    
+       DISPLAY CourseVar, CourseTitle, GradeTitle, CreditHrTitle, 
+       EarnedSpace, QualityPtsTitle    
        PERFORM subRead
        PERFORM UNTIL w = "NO"  
            *>MOVE inRecord TO outRecord                    
@@ -70,9 +76,16 @@
        COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr 
        COMPUTE CounterVar = CounterVar + 1   
            WHEN 4
+              DISPLAY SemesterSpace, "SEMESTER", SemCalSpace,
+              CalculateTotalCredit
+              DISPLAY SemesterSpace, "CUMULATIVE", " 3"
               Compute CalculateQualityPts = 0
               COMPUTE CounterVar = 0
-              COMPUTE CalculateTotalCredit = 0
+              COMPUTE CalculateTotalCredit = 0          
+              display " "
+            CONTINUE 
        END-EVALUATE       
-       DISPLAY inRecord
+       DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr
+       , QualityPtsSpace, CalculateQualityPts
+       *>DISPLAY CounterVar
        END-READ.

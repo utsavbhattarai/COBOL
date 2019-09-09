@@ -18,15 +18,11 @@
         02 CreditHr       PIC 9.
         02 FILLER         PIC X(1).   
        FD myOutFile.
-       01 outRecord.        
-        02 StudentNameOut    PIC X(15).
-        02 StudentWNbrOut    PIC X(8).
-        02 YearsOut          PIC X(9).
+       01 outRecord.
+        02 CourseVarOut      PIC X(9). 
         02 CourseOut         PIC X(9).
-        02 CourseDOut        PIC X(28).
-        02 GradeOut          PIC X(1).
-        02 CreditHrOut       PIC 9.
-        02 FILLER         PIC X(1).           
+        02 YearsOut          PIC X(9).
+                   
        WORKING-STORAGE SECTION.
        01 CourseVar PIC X(9) VALUE "Course". 
        01 CourseTitle PIC A(38) VALUE "TITLE ".
@@ -34,6 +30,8 @@
        01 CreditHrTitle PIC X(6) VALUE "Earned".
        01 QualityPtsTitle  PIC X(4) VALUE "QPTS".
        01 w PIC X(3) VALUE "YES".
+       01 StuName  PIC X(15) VALUE "STEVEN WILSION".
+       01 StuWNbr PIC X(8) VALUE "W0655899".
        01 CalculateQualityPts PIC 99V99.
        01 CalculateTotalCredit PIC 99V99.
        01 CounterVar PIC 9.
@@ -49,40 +47,45 @@
        01 CalculateTotalQPONESIX PIC 99V99.
        01 SemGPA   PIC 9V99.
        01 CumGPA   PIC 9V99.
+       
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
        OPEN OUTPUT myOutFile.
-       DISPLAY "SOUTHEASTERN LOUISIANA UNIVERSITY"
-       DISPLAY Years
+       DISPLAY "               SOUTHEASTERN LOUISIANA UNIVERSITY"
+       DISPLAY "                    HAMMOND, LA 70402           "
+
+       
+     
+       DISPLAY StuName
+       display StuWNbr
+       display " "
        DISPLAY CourseVar, CourseTitle, GradeTitle, CreditHrTitle, 
        EarnedSpace, QualityPtsTitle    
        PERFORM subRead
-       PERFORM UNTIL w = "NO"  
-           MOVE inRecord TO outRecord                    
-           WRITE outRecord
+       PERFORM UNTIL w = "NO" 
+           MOVE CourseVar to CourseVarOut
+           MOVE Years to YearsOut
+           MOVE CourseOut to CourseOut
+           MOVE StudentName to StuName                              
+           WRITE outRecord           
            PERFORM subRead           
        END-PERFORM.
        CLOSE myInFile.
        CLOSE myOutFile.
        STOP RUN.   
        subRead.     
-       READ myInFile
+       READ myInFile       
        AT END MOVE "NO" TO w       
-       if w = "NO"
-           COMPUTE CalculateTotalCredit = CalculateTotalCredit + 
-           CreditHr 
-           COMPUTE CounterVar = CounterVar + 1 
-           COMPUTE CumulativeCalc = CumulativeCalc + 
-           CalculateTotalCredit 
-           COMPUTE CalculateTotalQP = CalculateTotalQP + 
-           CalculateQualityPts
+       if w = "NO"           
+           COMPUTE CounterVar = CounterVar + 1
            COMPUTE SemGPA = 
-               CalculateTotalQPONEFIVE/CalculateTotalCredit
+               CalculateTotalQPONESIX/CalculateTotalCredit
                COMPUTE CumGPA =  CalculateTotalQP / CumulativeCalc
            DISPLAY SemesterSpace, "SEMESTER", SemCalSpace,
-           CalculateTotalCredit, SemGPA
+           CalculateTotalCredit, "    ",CalculateTotalQPONESIX, "    ", 
+           SemGPA
            DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc,
-           CumGPA
+           "    ",CalculateTotalQP, "    ", CumGPA
            DISPLAY "AT END"
        END-IF
        NOT AT END   
@@ -113,9 +116,9 @@
                COMPUTE SemGPA = CalculateTotalQP/CalculateTotalCredit  
                DISPLAY SemesterSpace, "SEMESTER", SemCalSpace,
                CalculateTotalCredit, "    ",CalculateTotalQP, 
-               "  ", SemGPA
+               "    ", SemGPA
                DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc
-               , "    ",CalculateTotalQP, " ",SemGPA
+               , "    ",CalculateTotalQP, "    ",SemGPA
                            
                Compute CalculateQualityPts = 0
                COMPUTE CounterVar = 0
@@ -153,9 +156,9 @@
                COMPUTE CumGPA =  CalculateTotalQP / CumulativeCalc
                DISPLAY SemesterSpace, "SEMESTER", SemCalSpace,
                CalculateTotalCredit, "    ",CalculateTotalQPONEFIVE, 
-               SemGPA
+               "    ",SemGPA
                DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc,
-               "    ",CalculateTotalQP,   CumGPA           
+               "    ",CalculateTotalQP,   "    ",CumGPA           
                Compute CalculateQualityPts = 0
                COMPUTE CounterVar = 0
                COMPUTE CalculateTotalCredit = 0          
@@ -177,7 +180,19 @@
            MULTIPLY 2.00 BY CreditHr GIVING CalculateQualityPts 
           end-multiply
        END-IF
-       COMPUTE CounterVar = CounterVar + 1         
+       COMPUTE CounterVar = CounterVar + 1
+       COMPUTE CumulativeCalc = CumulativeCalc + 
+           CalculateTotalCredit
+           COMPUTE CalculateTotalCredit = CalculateTotalCredit + 
+           CreditHr            
+           COMPUTE CalculateTotalQPONESIX = CalculateTotalQPONESIX +
+       CalculateQualityPts
+       COMPUTE CumulativeCalc = CumulativeCalc + 
+           CalculateTotalCredit           
+           
+           COMPUTE CalculateTotalQP = CalculateTotalQP + 
+           CalculateQualityPts            
+                    
             CONTINUE
        END-EVALUATE       
        DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr

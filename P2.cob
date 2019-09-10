@@ -1,11 +1,16 @@
+       *> Progrm-ID: TFile.cob
+       *> Authors:    Utsav Bhattarai, Biraj Basnet, Bisheshwor Ghimire, Eraj Khatiwada
+       *> OS:        Ubuntu 18
+       *> Compiler:  OpenCOBOL
+       
        IDENTIFICATION DIVISION.
        PROGRAM-ID. P2.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-        SELECT myInFile ASSIGN TO "TestFile.dat"
+        SELECT myInFile ASSIGN TO "P2In.dat"
         organization is line sequential.
-        SELECT myOutFile ASSIGN TO "TFileOut.dat"
+        SELECT myOutFile ASSIGN TO "P2Out.dat"
         organization is line sequential.
                    
        DATA DIVISION.
@@ -14,7 +19,7 @@
        01 inRecord.
         02 StudentName    PIC X(15).
         02 StudentWNbr    PIC X(8).
-        02 Years          PIC X(9).
+        02 Years          PIC X(11).
         02 Course         PIC X(9).
         02 CourseD        PIC X(28).
         02 Grade          PIC X(1).
@@ -37,8 +42,8 @@
        01 CreditHrTitle PIC X(6) VALUE "Earned".
        01 QualityPtsTitle  PIC X(4) VALUE "QPTS".
        01 w PIC X(3) VALUE "YES".
-       01 StuName  PIC X(15) VALUE "STEVEN WILSION".
-       01 StuWNbr PIC X(8) VALUE "W0655899".
+       01 StuName  PIC X(15) VALUE "UTSAV BHATTARAI".
+       01 StuWNbr PIC X(8) VALUE "W0655844".
        01 CalculateQualityPts PIC 99V99.
        01 CalculateTotalCredit PIC 99V99.
        01 CounterVar PIC 9.
@@ -47,7 +52,7 @@
        01 QualityPtsSpace PIC X(5).
        01 SemesterSpace PIC X(40).
        01 SemCalSpace PIC x(3).
-       01 YearSaver PIC x(9).
+       01 YearSaver PIC x(11).
        01 CumulativeCalc PIC 99V99.
        01 CalculateTotalQP PIC 99V99.
        01 CalculateTotalQPONEFIVE PIC 99V99.
@@ -55,6 +60,8 @@
        01 SemGPA   PIC 9V99.
        01 CumGPA   PIC 9V99.
        01 QpValueDisplay PIC 99V.
+       01 StudentNameOut    PIC X(15).
+       01 StudentWNbr    PIC X(8).
        
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
@@ -72,10 +79,13 @@
        WRITE outRecord
        display StuWNbr
        MOVE StuWNbr TO DatFile
-       WRITE outRecord
+       WRITE outRecord       
        display " "
        MOVE " " TO DatFile
-       WRITE outRecord 
+       WRITE outRecord
+       MOVE "FALL 2014" TO DatFile
+       WRITE outRecord
+       DISPLAY "FALL 2014" 
        STRING CourseVar, CourseTitle, GradeTitle, CreditHrTitle, 
        EarnedSpace, QualityPtsTitle INTO DatFile
        WRITE outRecord 
@@ -140,7 +150,7 @@
        COMPUTE CalculateTotalQP = CalculateTotalQP + 
        CalculateQualityPts 
        COMPUTE CounterVar = CounterVar + 1                 
-           WHEN "FALL 2015"
+           WHEN "SPRING 2015"
                IF YearSaver IS NOT EQUAL Years 
                COMPUTE CumulativeCalc = CumulativeCalc + 
                CalculateTotalCredit
@@ -165,7 +175,7 @@
                COMPUTE CounterVar = 0
                COMPUTE CalculateTotalCredit = 0          
                display " "
-               MOVE "FALL 2015" TO YearSaver 
+               MOVE "SPRING 2015" TO YearSaver 
                MOVE Years TO DatFile
                WRITE outRecord
                DISPLAY Years
@@ -190,7 +200,7 @@
        CalculateQualityPts
        COMPUTE CounterVar = CounterVar + 1         
             CONTINUE 
-       WHEN "FALL 2016"
+       WHEN "FALL 2015"
                IF YearSaver IS NOT EQUAL Years 
                COMPUTE CumulativeCalc = CumulativeCalc + 
                CalculateTotalCredit
@@ -218,7 +228,7 @@
                COMPUTE CounterVar = 0
                COMPUTE CalculateTotalCredit = 0          
                display " "
-               MOVE "FALL 2016" TO YearSaver 
+               MOVE "FALL 2015" TO YearSaver 
                MOVE Years TO DatFile
                WRITE outRecord
                DISPLAY Years

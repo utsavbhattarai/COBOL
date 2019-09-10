@@ -3,8 +3,11 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-        SELECT myInFile ASSIGN TO "TestFile.dat".
-        SELECT myOutFile ASSIGN TO "TFileOut.dat".         
+        SELECT myInFile ASSIGN TO "TestFile.dat"
+        organization is line sequential.
+        SELECT myOutFile ASSIGN TO "TFileOut.dat"
+        organization is line sequential.
+                   
        DATA DIVISION.
        FILE SECTION.
        FD myInFile.           
@@ -18,11 +21,15 @@
         02 CreditHr       PIC 9.
         02 FILLER         PIC X(1).   
        FD myOutFile.
-       01 outRecord.
-        02 CourseVarOut      PIC X(9). 
-        02 CourseOut         PIC X(9).
-        02 YearsOut          PIC X(9).
-                   
+       01 outRecord. 
+        02 DatFile		PIC X(100).      
+       01 outRecordCalc.
+           02 stringvar PIC X(51).
+           02 CalculateTotalCreditOut PIC 99.99.
+           02 spaceVar PIC X(4).           
+           02 CalculateTotalQPOut PIC 99.99.
+           02 spaceVar PIC X(4).
+           02 calcVal PIC 9.99.
        WORKING-STORAGE SECTION.
        01 CourseVar PIC X(9) VALUE "Course". 
        01 CourseTitle PIC A(38) VALUE "TITLE ".
@@ -37,7 +44,7 @@
        01 CounterVar PIC 9.
        01 GradeSpace PIC X(10).
        01 EarnedSpace PIC X(3).
-       01 QualityPtsSpace PIC X(8).
+       01 QualityPtsSpace PIC X(5).
        01 SemesterSpace PIC X(40).
        01 SemCalSpace PIC x(3).
        01 YearSaver PIC x(9).
@@ -47,26 +54,38 @@
        01 CalculateTotalQPONESIX PIC 99V99.
        01 SemGPA   PIC 9V99.
        01 CumGPA   PIC 9V99.
+       01 QpValueDisplay PIC 99V.
        
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
        OPEN OUTPUT myOutFile.
        DISPLAY "               SOUTHEASTERN LOUISIANA UNIVERSITY"
        DISPLAY "                    HAMMOND, LA 70402           "
-
-       
-     
+       MOVE "               SOUTHEASTERN LOUISIANA UNIVERSITY" TO 
+       DatFile
+       WRITE outRecord
+       MOVE "                    HAMMOND, LA 70402           " TO 
+       DatFile
+       WRITE outRecord     
        DISPLAY StuName
+       MOVE StuName TO DatFile
+       WRITE outRecord
        display StuWNbr
+       MOVE StuWNbr TO DatFile
+       WRITE outRecord
        display " "
+       MOVE " " TO DatFile
+       WRITE outRecord 
+       STRING CourseVar, CourseTitle, GradeTitle, CreditHrTitle, 
+       EarnedSpace, QualityPtsTitle INTO DatFile
+       WRITE outRecord 
+       MOVE ' ' TO DatFile
        DISPLAY CourseVar, CourseTitle, GradeTitle, CreditHrTitle, 
-       EarnedSpace, QualityPtsTitle    
+       EarnedSpace, QualityPtsTitle 
+
        PERFORM subRead
-       PERFORM UNTIL w = "NO" 
-           MOVE CourseVar to CourseVarOut
-           MOVE Years to YearsOut
-           MOVE CourseOut to CourseOut
-           MOVE StudentName to StuName                              
+       PERFORM UNTIL w = "NO"
+           *>MOVE Course to CourseOut                             
            WRITE outRecord           
            PERFORM subRead           
        END-PERFORM.
@@ -83,14 +102,25 @@
                COMPUTE CumGPA =  CalculateTotalQP / CumulativeCalc
            DISPLAY SemesterSpace, "SEMESTER", SemCalSpace,
            CalculateTotalCredit, "    ",CalculateTotalQPONESIX, "    ", 
-           SemGPA
+           SemGPA           
            DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc,
            "    ",CalculateTotalQP, "    ", CumGPA
-           DISPLAY "AT END"
+           MOVE SemGPA TO calcVal           
+           STRING SemesterSpace, "SEMESTER", SemCalSpace INTO 
+               outRecordCalc
+               Move CalculateTotalCredit to CalculateTotalCreditOut               
+               Move CalculateTotalQPONESIX to CalculateTotalQPOut
+               WRITE outRecordCalc                         
+               STRING SemesterSpace, "CUMULATIVE  ", SemesterSpace, 
+               INTO stringvar               
+               Move CumulativeCalc to CalculateTotalCreditOut
+               MOVE CumGPA TO calcVal
+               MOVE CalculateTotalQP TO CalculateTotalQPOut
+               WRITE outRecordCalc
        END-IF
        NOT AT END   
        EVALUATE Years
-           WHEN "FALL 2014"
+           WHEN "FALL 2014"               
             MOVE Years TO YearSaver
               IF Grade = "A"
           MULTIPLY 4.00 BY CreditHr GIVING CalculateQualityPts 
@@ -107,7 +137,8 @@
           end-multiply
        END-IF
        COMPUTE CalculateTotalCredit = CalculateTotalCredit + CreditHr
-       COMPUTE CalculateTotalQP = CalculateTotalQP + CalculateQualityPts 
+       COMPUTE CalculateTotalQP = CalculateTotalQP + 
+       CalculateQualityPts 
        COMPUTE CounterVar = CounterVar + 1                 
            WHEN "FALL 2015"
                IF YearSaver IS NOT EQUAL Years 
@@ -119,12 +150,24 @@
                "    ", SemGPA
                DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc
                , "    ",CalculateTotalQP, "    ",SemGPA
-                           
+               Move CalculateTotalCredit to CalculateTotalCreditOut
+               STRING SemesterSpace, "SEMESTER", SemCalSpace INTO 
+               outRecordCalc               
+               MOVE SemGPA TO calcVal
+               MOVE CalculateTotalQP TO CalculateTotalQPOut
+               WRITE outRecordCalc           
+               STRING SemesterSpace, "CUMULATIVE  ", SemesterSpace, 
+               INTO stringvar
+               MOVE SemGPA TO calcVal
+               MOVE CalculateTotalQP TO CalculateTotalQPOut
+               WRITE outRecordCalc
                Compute CalculateQualityPts = 0
                COMPUTE CounterVar = 0
                COMPUTE CalculateTotalCredit = 0          
                display " "
                MOVE "FALL 2015" TO YearSaver 
+               MOVE Years TO DatFile
+               WRITE outRecord
                DISPLAY Years
                END-IF                           
                   IF Grade = "A"
@@ -158,12 +201,26 @@
                CalculateTotalCredit, "    ",CalculateTotalQPONEFIVE, 
                "    ",SemGPA
                DISPLAY SemesterSpace, "CUMULATIVE ", CumulativeCalc,
-               "    ",CalculateTotalQP,   "    ",CumGPA           
+               "    ",CalculateTotalQP,   "    ",CumGPA
+               STRING SemesterSpace, "SEMESTER", SemCalSpace INTO 
+               outRecordCalc
+               Move CalculateTotalCredit to CalculateTotalCreditOut
+               MOVE SemGPA TO calcVal
+               MOVE CalculateTotalQPONEFIVE TO CalculateTotalQPOut
+               WRITE outRecordCalc           
+               STRING SemesterSpace, "CUMULATIVE  ", SemesterSpace, 
+               INTO stringvar
+               Move CumulativeCalc to CalculateTotalCreditOut
+               MOVE CumGPA TO calcVal
+               MOVE CalculateTotalQP TO CalculateTotalQPOut
+               WRITE outRecordCalc           
                Compute CalculateQualityPts = 0
                COMPUTE CounterVar = 0
                COMPUTE CalculateTotalCredit = 0          
                display " "
                MOVE "FALL 2016" TO YearSaver 
+               MOVE Years TO DatFile
+               WRITE outRecord
                DISPLAY Years
                END-IF                           
                   IF Grade = "A"
@@ -191,10 +248,15 @@
            CalculateTotalCredit           
            
            COMPUTE CalculateTotalQP = CalculateTotalQP + 
-           CalculateQualityPts            
-                    
+           CalculateQualityPts         
+           
             CONTINUE
-       END-EVALUATE       
-       DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr
-       , QualityPtsSpace, CalculateQualityPts
+       END-EVALUATE
+       MOVE CalculateQualityPts TO QpValueDisplay
+       STRING Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr, 
+       ".00", QualityPtsSpace, QpValueDisplay, ".00" INTO DatFile                     
+       DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr,
+       ".00", QualityPtsSpace, CalculateQualityPts     
+       WRITE outRecord      
+       MOVE " " TO DatFile
        END-READ.

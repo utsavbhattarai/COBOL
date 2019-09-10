@@ -1,98 +1,66 @@
+       *> Test File I/O: READ, WRITE
+       *> An example program which
+       *> reades (TFileIn.dat) records from a input file,
+       *> displays the records,
+       *> and writes (TFileOut.dat)them to a sequential file.
+       *>
+       *> Program-ID: TFile.cob
+       *> Author: Kuo-pao Yang
+       *> OS: Ubuntu 18
+       *> Compiler: OpenCOBOL
+       *> Note:
+       *> The following instructions are used to
+       *> edit, compile, and run this program
+       *> $ nano TFile.cob
+       *> $ cobc -x -free TFile.cob
+       *> $ ./TFile
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. TEST3.
+       PROGRAM-ID. TFile.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-       SELECT StudentFile ASSIGN TO "TestFile.dat"
-       ORGANIZATION IS LINE SEQUENTIAL.
-       SELECT OutputFile ASSIGN TO "Report.dat"
-       ORGANIZATION IS LINE SEQUENTIAL.
-       
-       
+        SELECT myInFile ASSIGN TO "TestFile.dat"
+            organization is line sequential.
+
+        SELECT myOutFile ASSIGN TO "TFileOut.dat"
+            organization is line sequential.
+
        DATA DIVISION.
        FILE SECTION.
-       FD StudentFile.
-       
-       *>Student details will only be printed once
-       01 StudentDetails.
-       05 STUDENT-NAME         PIC X(16).
-       05 STUDENT-ID           PIC X(9).
-       
-       *>Semester info that will be on one line and not repeated
-       01 SemesterDetails.
-       05 SEMESTER             PIC X(9).
-       
-       *> Details in the class that need to be seperate
-       01 ClassDetails.
-       05 CLASS-NAME           PIC X(32).
-       05 GRADE                PIC X(2).
-       05 HOURS                PIC X(4).
-       05 POINTS               PIC X(2).
-       
-       *>values that need to be calculated
-       01 CalculatedValues.
-       05 CUMULATIVE-GPA-IN    PIC 99v99 VALUE ZERO.
-       05 CUMULATIVE-QP-IN     PIC 99v99 VALUE ZERO.
-       05 CUMULATIVE-HOURS-IN  PIC 99v99 VALUE ZERO.
-       
-       FD OutputFile.
-       01 PrintLine                    PIC X(70).
-       
+       FD myInFile.
+       01 inRecord.
+        02 StudentName    PIC X(15).
+        02 StudentWNbr    PIC X(8).
+        02 Years          PIC X(9).
+        02 Course         PIC X(9).
+        02 CourseD        PIC X(28).
+        02 Grade          PIC X(1).
+        02 CreditHr       PIC 9.
+        02 FILLER         PIC X(1).
+       FD myOutFile.
+       01 studentOutRecord.
+        02 DatFile PIC X(10).
+        02 DatFilevar PIC 99.99.              
        WORKING-STORAGE SECTION.
-       
-       01 SWITCHES.
-       05 EOF-SWITCH           PIC X VALUE "N".
-       01 COUNTERS.
-       05 REC-COUNTER          PIC 9(3) VALUE 0.
-       01 CUMULATIVE.
-       05 CUMULATIVE-QP        PIC 99V99 value zero.
-       
+       01 w PIC X(3) VALUE "YES".
+       01 stor PIC X(9).
+       01 TestVar PIC 99V99 VALUE 33.99.
        PROCEDURE DIVISION.
-       *>main paragraph, everything starts here
-       Main.
-       PERFORM Begin.
-       PERFORM ProcessData.
-       PERFORM PrintLines
-       UNTIL EOF-SWITCH = "Y".
-       
-       *>opening read
-       Begin.
-       OPEN INPUT StudentFile
-       OPEN OUTPUT OutputFile
-       
-       READ StudentFile
-       AT END
-       MOVE "Y" TO EOF-SWITCH
-       NOT AT END
-       COMPUTE REC-COUNTER = REC-COUNTER + 1
-       END-READ.
-       
-       ProcessData.
-       READ StudentFile
-       AT END
-       MOVE "Y" TO EOF-SWITCH
-       NOT AT END
-       IF GRADE = "A"
-       COMPUTE CUMULATIVE-QP = CUMULATIVE-QP + 4
-       ELSE
-       IF GRADE = "B"
-       COMPUTE CUMULATIVE-QP = CUMULATIVE-QP + 3
-       ELSE
-       IF GRADE = "C"
-       COMPUTE CUMULATIVE-QP = CUMULATIVE-QP + 2
-       ELSE
-       IF GRADE = "D"
-       COMPUTE CUMULATIVE-QP = CUMULATIVE-QP + 1
-       END-IF.
-       
-       
-       *>printing out our lines to terminal
-       PrintLines.
-       
-       READ StudentFile
-       AT END
-       MOVE "Y" TO EOF-SWITCH
-       
-       NOT AT END
-       DISPLAY CUMULATIVE-QP
-       END-READ.
+        OPEN INPUT myInFile.
+        OPEN OUTPUT myOutFile.
+        PERFORM subRead
+        PERFORM UNTIL w = "NO" 
+        PERFORM subRead
+        END-PERFORM.
+        CLOSE myInFile.
+        CLOSE myOutFile.
+        STOP RUN.
+       subRead.
+        READ myInFile
+        AT END
+        MOVE "NO" TO w
+        NOT AT END
+        MOVE TestVar to DatFilevar
+        Move "ABV" to DatFile
+        WRITE studentOutRecord 
+        END-READ.

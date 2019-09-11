@@ -62,6 +62,8 @@
        01 QpValueDisplay PIC 99V.
        01 StudentNameOut    PIC X(15).
        01 StudentWNbr    PIC X(8).
+       01 TruncateValue PIC 9V.
+       01 QpValueDisplayOne PIC 9V.
        
        PROCEDURE DIVISION.       
        OPEN INPUT myInFile.
@@ -262,11 +264,25 @@
            
             CONTINUE
        END-EVALUATE
-       MOVE CalculateQualityPts TO QpValueDisplay
-       STRING Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr, 
-       ".00", QualityPtsSpace, QpValueDisplay, ".00" INTO DatFile                     
+       COMPUTE TruncateValue = CalculateQualityPts / 10 
+       IF (TruncateValue = 0)
+           MOVE CalculateQualityPts TO QpValueDisplayOne
+           STRING Course, CourseD, GradeSpace, Grade, EarnedSpace, 
+           CreditHr, 
+       ".00", QualityPtsSpace, QpValueDisplayOne, ".00" INTO DatFile                     
        DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr,
-       ".00", QualityPtsSpace, CalculateQualityPts     
+       ".00", QualityPtsSpace, QpValueDisplayOne, ".00"    
        WRITE outRecord      
        MOVE " " TO DatFile
+        else 
+        MOVE CalculateQualityPts TO QpValueDisplay
+        STRING Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr, 
+       ".00", QualityPtsSpace, QpValueDisplay, ".00" INTO DatFile                     
+       DISPLAY Course, CourseD, GradeSpace, Grade, EarnedSpace, CreditHr,
+       ".00", QualityPtsSpace, QpValueDisplay,".00"     
+       WRITE outRecord      
+       MOVE " " TO DatFile
+       END-IF
+       *>MOVE CalculateQualityPts TO QpValueDisplay
+       
        END-READ.

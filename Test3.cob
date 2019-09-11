@@ -45,11 +45,15 @@
        01 w PIC X(3) VALUE "YES".
        01 stor PIC X(9).
        01 TestVar PIC 99V99 VALUE 33.99.
+       01 x PIC 9V.
+       01 y PIC 9V99.
        PROCEDURE DIVISION.
         OPEN INPUT myInFile.
         OPEN OUTPUT myOutFile.
         PERFORM subRead
         PERFORM UNTIL w = "NO" 
+       
+        
         PERFORM subRead
         END-PERFORM.
         CLOSE myInFile.
@@ -60,6 +64,12 @@
         AT END
         MOVE "NO" TO w
         NOT AT END
+         COMPUTE x = TestVar / 10
+        IF x = 0
+        MOVE TestVar to y
+        end-if
+
+        DISPLAY x
         MOVE TestVar to DatFilevar
         Move "ABV" to DatFile
         WRITE studentOutRecord 

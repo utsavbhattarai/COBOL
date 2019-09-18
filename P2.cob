@@ -250,14 +250,12 @@
           end-multiply
        END-IF
        COMPUTE CounterVar = CounterVar + 1
-       COMPUTE CumulativeCalc = CumulativeCalc + 
-           CalculateTotalCredit
            COMPUTE CalculateTotalCredit = CalculateTotalCredit + 
            CreditHr            
            COMPUTE CalculateTotalQPONESIX = CalculateTotalQPONESIX +
        CalculateQualityPts
-       COMPUTE CumulativeCalc = CumulativeCalc + 
-           CalculateTotalCredit           
+       COMPUTE CumulativeCalc =  CumulativeCalc + CreditHr
+                      
            
            COMPUTE CalculateTotalQP = CalculateTotalQP + 
            CalculateQualityPts         
